@@ -1,0 +1,124 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav class="text-sm text-gray-600 mb-4">
+  <a href="{% url 'home' %}">Home</a> &gt;
+  <a href="{% url 'marketplace' %}">Marketplace</a> &gt;
+  <span class="text-gray-800">{{ scrap.title }}</span>
+</nav>
+
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <div class="md:flex">
+    <!-- Image Section -->
+    <div class="md:w-1/2 bg-gray-100 flex items-center justify-center p-6">
+      {% if scrap.image %}
+      <img src="{{ scrap.image.url }}" alt="{{ scrap.title }}" class="max-h-96 object-contain">
+      {% else %}
+      <div class="text-center text-gray-400">
+        <span class="text-8xl block mb-4">♻️</span>
+        <p>No image available</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Details Section -->
+    <div class="md:w-1/2 p-6">
+      <div class="flex justify-between items-start">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ scrap.title }}</h1>
+        {% if scrap.seller == request.user %}
+        <div class="flex space-x-2">
+          <a href="{% url 'edit_scrap' scrap.id %}"
+            class="px-3 py-1 border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white">Edit</a>
+          <a href="{% url 'delete_scrap' scrap.id %}"
+            class="px-3 py-1 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white">Delete</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="bg-green-100 text-green-800 text-xl font-bold py-2 px-4 rounded mb-4">
+        ${{ scrap.price }}
+      </div>
+
+      <div class="mb-4">
+        <span class="text-gray-700 font-medium">Category:</span>
+        <span class="ml-2">{{ scrap.category.name }}</span>
+      </div>
+
+      <div class="mb-4">
+        <span class="text-gray-700 font-medium">Condition:</span>
+        <span class="ml-2">{{ scrap.condition }}</span>
+      </div>
+
+      <div class="mb-4">
+        <span class="text-gray-700 font-medium">Location:</span>
+        <span class="ml-2">{{ scrap.location }}</span>
+      </div>
+
+      <div class="mb-4">
+        <span class="text-gray-700 font-medium">Quantity Available:</span>
+        <span class="ml-2">{{ scrap.quantity }}</span>
+      </div>
+
+      <div class="mb-4">
+        <span class="text-gray-700 font-medium">Posted by:</span>
+        <span class="ml-2">{{ scrap.seller.username }}</span>
+      </div>
+
+      <div class="mb-4">
+        <span class="text-gray-700 font-medium">Date Listed:</span>
+        <span class="ml-2">{{ scrap.created|date:"M d, Y" }}</span>
+      </div>
+
+      <div class="border-t border-gray-200 my-6 pt-4">
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">Description</h2>
+        <p class="text-gray-700 whitespace-pre-line">{{ scrap.description }}</p>
+      </div>
+
+      {% if request.user.is_authenticated and request.user != scrap.seller %}
+      <div class="mt-6">
+        <a href="{% url 'place_order' scrap.id %}"
+          class="block w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md text-center font-medium">Place
+          Order</a>
+      </div>
+      {% elif not request.user.is_authenticated %}
+      <div class="mt-6">
+        <a href="{% url 'login' %}"
+          class="block w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md text-center font-medium">Login
+          to Place Order</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Related Items Section -->
+{% if related_items %}
+<div class="mt-8">
+  <h2 class="text-xl font-bold text-gray-800 mb-4">Related Items</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for item in related_items %}
+    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      <div class="h-40 bg-gray-200 overflow-hidden">
+        {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item.title }}" class="object-cover w-full h-full">
+        {% else %}
+        <div class="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+          <span>♻️</span>
+        </div>
+        {% endif %}
+      </div>
+      <div class="p-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ item.title }}</h3>
+        <div class="flex justify-between text-green-700 font-bold mb-2">
+          <span>${{ item.price }}</span>
+        </div>
+        <a href="{% url 'scrap_detail' item.id %}"
+          class="block text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded-md">View Details</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

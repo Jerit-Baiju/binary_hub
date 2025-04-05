@@ -1,0 +1,126 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Place Your Order</h1>
+    <p class="text-gray-600">Complete your purchase of this scrap item</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Order Summary -->
+    <div class="md:col-span-2">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Item Details</h2>
+
+        <div class="flex mb-6">
+          <div class="w-24 h-24 bg-gray-200 rounded overflow-hidden flex-shrink-0">
+            {% if scrap.image %}
+            <img src="{{ scrap.image.url }}" alt="{{ scrap.title }}" class="w-full h-full object-cover">
+            {% else %}
+            <div class="w-full h-full flex items-center justify-center text-gray-400 text-3xl">
+              <span>♻️</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="ml-4 flex-grow">
+            <h3 class="font-semibold">{{ scrap.title }}</h3>
+            <div class="text-sm text-gray-500">Category: {{ scrap.category.name }}</div>
+            <div class="text-sm text-gray-500">Condition: {{ scrap.condition }}</div>
+            <div class="text-sm text-gray-500">Seller: {{ scrap.seller.username }}</div>
+            <div class="text-green-600 font-semibold mt-1">${{ scrap.price }} per unit</div>
+          </div>
+        </div>
+
+        <form method="POST" action="">
+          {% csrf_token %}
+          <div class="mb-6">
+            <label for="quantity" class="block text-gray-700 text-sm font-medium mb-2">Quantity</label>
+            <input type="number" name="quantity" id="quantity" min="1" max="{{ scrap.quantity }}"
+              value="1" class="w-full px-4 py-2 border rounded-md focus:ring-green-500 focus:border-green-500"
+              onchange="updateTotal()" required>
+            <p class="text-sm text-gray-500 mt-1">{{ scrap.quantity }} units available</p>
+          </div>
+
+          <!-- Shipping Information - Just for display, not functional in this demo -->
+          <h2 class="text-xl font-semibold mb-4 border-t border-gray-200 pt-4">Shipping Information</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label for="name" class="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
+              <input type="text" id="name" placeholder="Your full name"
+                class="w-full px-4 py-2 border rounded-md focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+              <label for="phone" class="block text-gray-700 text-sm font-medium mb-2">Phone</label>
+              <input type="tel" id="phone" placeholder="Your phone number"
+                class="w-full px-4 py-2 border rounded-md focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div class="md:col-span-2">
+              <label for="address" class="block text-gray-700 text-sm font-medium mb-2">Address</label>
+              <input type="text" id="address" placeholder="Street address"
+                class="w-full px-4 py-2 border rounded-md focus:ring-green-500 focus:border-green-500 mb-2">
+              <input type="text" id="address2" placeholder="Apt, suite, unit, etc. (optional)"
+                class="w-full px-4 py-2 border rounded-md focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+              <label for="city" class="block text-gray-700 text-sm font-medium mb-2">City</label>
+              <input type="text" id="city" placeholder="City"
+                class="w-full px-4 py-2 border rounded-md focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+              <label for="zip" class="block text-gray-700 text-sm font-medium mb-2">Zip Code</label>
+              <input type="text" id="zip" placeholder="Zip Code"
+                class="w-full px-4 py-2 border rounded-md focus:ring-green-500 focus:border-green-500">
+            </div>
+          </div>
+
+          <div class="mt-8 pt-4 border-t border-gray-200 flex justify-between items-center">
+            <a href="{% url 'scrap_detail' scrap.id %}" class="text-green-600 hover:text-green-800">← Back to item</a>
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md">Place
+              Order</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div>
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+
+        <div class="border-b border-gray-200 pb-4 mb-4">
+          <div class="flex justify-between mb-2">
+            <span>Item Price</span>
+            <span>${{ scrap.price }}</span>
+          </div>
+          <div class="flex justify-between mb-2">
+            <span>Quantity</span>
+            <span id="summary-quantity">1</span>
+          </div>
+        </div>
+
+        <div class="flex justify-between font-bold text-lg">
+          <span>Total</span>
+          <span id="order-total" data-price="{{ scrap.price }}">${{ scrap.price }}</span>
+        </div>
+
+        <div class="mt-6 text-center">
+          <p class="text-sm text-gray-500">This is a simplified checkout for demonstration. No actual payment will be
+            processed.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateTotal() {
+    const quantity = document.getElementById('quantity').value;
+    const price = parseFloat(document.getElementById('order-total').getAttribute('data-price'));
+    const total = (quantity * price).toFixed(2);
+
+    document.getElementById('summary-quantity').textContent = quantity;
+    document.getElementById('order-total').textContent = '$' + total;
+  }
+</script>
+{% endblock %}

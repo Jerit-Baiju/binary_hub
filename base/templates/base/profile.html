@@ -1,0 +1,252 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-gray-800 mb-2">My Profile</h1>
+  <p class="text-gray-600">Manage your scraps and view your orders</p>
+</div>
+
+<!-- Tabs -->
+<div class="mb-8 border-b border-gray-200">
+  <div class="flex flex-wrap -mb-px">
+    <button onclick="showTab('my-scraps')" class="tab-button inline-block p-4 border-b-2 rounded-t-lg"
+      id="my-scraps-tab">My Scraps</button>
+    <button onclick="showTab('my-sales')" class="tab-button inline-block p-4 border-b-2 rounded-t-lg"
+      id="my-sales-tab">My Sales</button>
+    <button onclick="showTab('my-purchases')" class="tab-button inline-block p-4 border-b-2 rounded-t-lg"
+      id="my-purchases-tab">My Purchases</button>
+  </div>
+</div>
+
+<!-- My Scraps Tab -->
+<div id="my-scraps" class="tab-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-semibold">My Listed Scraps</h2>
+    <a href="{% url 'add_scrap' %}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">+ Add New
+      Scrap</a>
+  </div>
+
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    {% if my_scraps %}
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        {% for item in my_scraps %}
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              {% if item.image %}
+              <div class="flex-shrink-0 h-10 w-10">
+                <img class="h-10 w-10 rounded-full object-cover" src="{{ item.image.url }}" alt="{{ item.title }}">
+              </div>
+              {% endif %}
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">{{ item.title }}</div>
+                <div class="text-sm text-gray-500">{{ item.category.name }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${{ item.price }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ item.quantity }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            {% if item.is_available %}
+            <span
+              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Available</span>
+            {% else %}
+            <span
+              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Unavailable</span>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <a href="{% url 'scrap_detail' item.id %}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
+            <a href="{% url 'edit_scrap' item.id %}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+            <a href="{% url 'delete_scrap' item.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="py-8 text-center">
+      <p class="text-gray-500 mb-4">You haven't listed any scraps yet.</p>
+      <a href="{% url 'add_scrap' %}"
+        class="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">Add Your First Scrap</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- My Sales Tab -->
+<div id="my-sales" class="tab-content hidden">
+  <h2 class="text-xl font-semibold mb-6">Items Sold</h2>
+
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    {% if my_sales %}
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buyer</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        {% for sale in my_sales %}
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">{{ sale.scrap_item.title }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ sale.buyer.username }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ sale.quantity }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${{ sale.total_price }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ sale.created|date:"M d, Y" }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        {% if sale.status == 'pending' %}
+                                            bg-yellow-100 text-yellow-800
+                                        {% elif sale.status == 'delivered' %}
+                                            bg-green-100 text-green-800
+                                        {% elif sale.status == 'canceled' %}
+                                            bg-red-100 text-red-800
+                                        {% else %}
+                                            bg-blue-100 text-blue-800
+                                        {% endif %}
+                                    ">
+              {{ sale.status|title }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="py-8 text-center">
+      <p class="text-gray-500">You haven't sold any items yet.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- My Purchases Tab -->
+<div id="my-purchases" class="tab-content hidden">
+  <h2 class="text-xl font-semibold mb-6">Items Purchased</h2>
+
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    {% if my_purchases %}
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        {% for purchase in my_purchases %}
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">{{ purchase.scrap_item.title }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ purchase.seller.username }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ purchase.quantity }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${{ purchase.total_price }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ purchase.created|date:"M d, Y" }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        {% if purchase.status == 'pending' %}
+                                            bg-yellow-100 text-yellow-800
+                                        {% elif purchase.status == 'delivered' %}
+                                            bg-green-100 text-green-800
+                                        {% elif purchase.status == 'canceled' %}
+                                            bg-red-100 text-red-800
+                                        {% else %}
+                                            bg-blue-100 text-blue-800
+                                        {% endif %}
+                                    ">
+              {{ purchase.status|title }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="py-8 text-center">
+      <p class="text-gray-500 mb-4">You haven't purchased any items yet.</p>
+      <a href="{% url 'marketplace' %}"
+        class="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">Browse Marketplace</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Tab Script -->
+<script>
+  // Default active tab
+  document.addEventListener('DOMContentLoaded', function () {
+    showTab('my-scraps');
+  });
+
+  function showTab(tabId) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(function (tab) {
+      tab.classList.add('hidden');
+    });
+
+    // Remove active class from all tabs
+    document.querySelectorAll('.tab-button').forEach(function (button) {
+      button.classList.remove('text-green-600', 'border-green-600', 'active');
+      button.classList.add('text-gray-500', 'border-transparent');
+    });
+
+    // Show selected tab content
+    document.getElementById(tabId).classList.remove('hidden');
+
+    // Set active class on selected tab
+    document.getElementById(tabId + '-tab').classList.remove('text-gray-500', 'border-transparent');
+    document.getElementById(tabId + '-tab').classList.add('text-green-600', 'border-green-600', 'active');
+  }
+</script>
+{% endblock %}

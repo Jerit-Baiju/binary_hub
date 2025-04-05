@@ -1,0 +1,75 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-gray-800 mb-2">My Orders</h1>
+  <p class="text-gray-600">Track your purchases</p>
+</div>
+
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+  {% if orders %}
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        {% for order in orders %}
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ order.id }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <div class="flex items-center">
+              {% if order.scrap_item.image %}
+              <div class="flex-shrink-0 h-10 w-10">
+                <img class="h-10 w-10 rounded-full object-cover" src="{{ order.scrap_item.image.url }}"
+                  alt="{{ order.scrap_item.title }}">
+              </div>
+              {% endif %}
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">{{ order.scrap_item.title }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.seller.username }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.quantity }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ order.total_price }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.created|date:"M d, Y" }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        {% if order.status == 'pending' %}
+                                            bg-yellow-100 text-yellow-800
+                                        {% elif order.status == 'delivered' %}
+                                            bg-green-100 text-green-800
+                                        {% elif order.status == 'canceled' %}
+                                            bg-red-100 text-red-800
+                                        {% else %}
+                                            bg-blue-100 text-blue-800
+                                        {% endif %}
+                                    ">
+              {{ order.status|title }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="py-12 text-center">
+    <div class="text-5xl mb-4">📦</div>
+    <h3 class="text-xl font-semibold mb-2">No orders yet</h3>
+    <p class="text-gray-500 mb-6">You haven't placed any orders yet.</p>
+    <a href="{% url 'marketplace' %}"
+      class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md">Browse Marketplace</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

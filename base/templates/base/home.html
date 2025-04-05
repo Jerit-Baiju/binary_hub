@@ -1,0 +1,107 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-green-100 rounded-xl shadow-md overflow-hidden mb-8">
+  <div class="md:flex">
+    <div class="p-8 md:w-1/2">
+      <h1 class="text-3xl md:text-4xl font-bold text-green-800 mb-4">Welcome to Binary Hub</h1>
+      <p class="text-lg text-gray-700 mb-6">The sustainable marketplace for buying and selling scraps. Find value in
+        what others discard and contribute to a greener future.</p>
+      <div class="flex space-x-4">
+        <a href="{% url 'marketplace' %}"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium">Browse Scraps</a>
+        <a href="{% url 'add_scrap' %}"
+          class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-6 py-3 rounded-lg font-medium">Sell Your Scrap</a>
+      </div>
+    </div>
+    <div class="md:w-1/2 bg-green-500 p-6 flex items-center justify-center">
+      <div class="text-center text-white">
+        <div class="text-6xl mb-4">♻️</div>
+        <h2 class="text-2xl font-bold">Reduce. Reuse. Recycle.</h2>
+        <p class="mt-2">Join our community of eco-conscious buyers and sellers</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Categories Section -->
+<h2 class="text-2xl font-bold text-gray-800 mb-4">Browse Categories</h2>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+  {% for category in categories %}
+  <a href="{% url 'marketplace' %}?category={{ category.id }}"
+    class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow text-center">
+    <div class="text-3xl mb-2">
+      {% if category.name == 'Metal' %}🔧
+      {% elif category.name == 'Paper' %}📄
+      {% elif category.name == 'Plastic' %}🧪
+      {% elif category.name == 'Electronics' %}📱
+      {% elif category.name == 'Glass' %}🥃
+      {% elif category.name == 'Wood' %}🪵
+      {% else %}♻️{% endif %}
+    </div>
+    <h3 class="font-semibold">{{ category.name }}</h3>
+  </a>
+  {% empty %}
+  <div class="col-span-full text-center py-8">
+    <p>No categories available yet.</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Recent Items Section -->
+<h2 class="text-2xl font-bold text-gray-800 mb-4">Recently Added</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  {% for item in recent_items %}
+  <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <div class="h-48 bg-gray-200 overflow-hidden">
+      {% if item.image %}
+      <img src="{{ item.image.url }}" alt="{{ item.title }}" class="object-cover w-full h-full">
+      {% else %}
+      <div class="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+        <span>♻️</span>
+      </div>
+      {% endif %}
+    </div>
+    <div class="p-4">
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ item.title }}</h3>
+      <div class="flex justify-between text-green-700 font-bold mb-2">
+        <span>${{ item.price }}</span>
+        <span>{{ item.location }}</span>
+      </div>
+      <p class="text-gray-600 mb-4 line-clamp-2">{{ item.description|truncatechars:100 }}</p>
+      <a href="{% url 'scrap_detail' item.id %}"
+        class="block text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded-md">View Details</a>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-span-full text-center py-8">
+    <p>No items available yet.</p>
+    <a href="{% url 'add_scrap' %}"
+      class="inline-block mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md">Add First Item</a>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- How It Works Section -->
+<div class="mt-12">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">How Binary Hub Works</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+      <div class="text-4xl mb-4">📦</div>
+      <h3 class="text-xl font-semibold mb-2">1. List Your Scraps</h3>
+      <p>Take photos and create a listing for the scraps you want to sell.</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+      <div class="text-4xl mb-4">🔍</div>
+      <h3 class="text-xl font-semibold mb-2">2. Connect with Buyers</h3>
+      <p>Interested buyers will contact you to purchase your scraps.</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+      <div class="text-4xl mb-4">💰</div>
+      <h3 class="text-xl font-semibold mb-2">3. Earn & Recycle</h3>
+      <p>Complete the transaction and contribute to a circular economy!</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

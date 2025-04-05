@@ -1,0 +1,36 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="text-center mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-red-500" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      </svg>
+      <h2 class="text-2xl font-bold text-gray-800 mt-4">Delete Scrap Item</h2>
+      <p class="text-gray-600 mt-2">Are you sure you want to delete this item?</p>
+    </div>
+
+    <div class="bg-gray-100 rounded-lg p-4 mb-6">
+      <h3 class="font-semibold text-lg">{{ scrap.title }}</h3>
+      <p class="text-gray-700 mt-1">{{ scrap.description|truncatechars:100 }}</p>
+      <div class="mt-2 text-green-700 font-medium">${{ scrap.price }}</div>
+    </div>
+
+    <div class="text-center text-red-600 mb-6">
+      <p>This action cannot be undone.</p>
+    </div>
+
+    <form method="POST" action="">
+      {% csrf_token %}
+      <div class="flex justify-between">
+        <a href="{% url 'scrap_detail' scrap.id %}"
+          class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md">Cancel</a>
+        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md">Delete</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
