@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-j-^l$$j+t!bacja*m6@0-)uvsf&u4c69u%38ful#m+@_$p!)00
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["binary.jerit.in"]
 
 
 # Application definition
@@ -50,6 +50,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# Add CSRF trusted origins
+CSRF_TRUSTED_ORIGINS = ['https://binary.jerit.in']
 
 ROOT_URLCONF = "main.urls"
 
